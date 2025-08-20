@@ -2,7 +2,8 @@ export type LabelId = "label1" | "label2" | "label3";
 
 export type LabelPositions = Record<LabelId, number | null>;
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
+// const API_BASE = "http://localhost:3001";
+const API_BASE = "https://dnd-backend-kh0k.onrender.com";
 
 export async function loadPositions(): Promise<LabelPositions> {
 	try {
