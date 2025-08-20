@@ -2,20 +2,14 @@ export type LabelId = "label1" | "label2" | "label3";
 
 export type LabelPositions = Record<LabelId, number | null>;
 
-const STORAGE_KEY = "dragdrop-label-positions";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
 
 export async function loadPositions(): Promise<LabelPositions> {
-	const raw = localStorage.getItem(STORAGE_KEY);
-	if (!raw) {
-		return {
-			label1: 0,
-			label2: 4,
-			label3: 8,
-		};
-	}
 	try {
-		const parsed = JSON.parse(raw) as LabelPositions;
-		return parsed;
+		const res = await fetch(`${API_BASE}/api/positions`);
+		if (!res.ok) throw new Error("Failed to fetch");
+		const data = (await res.json()) as LabelPositions;
+		return data;
 	} catch {
 		return {
 			label1: 0,
@@ -26,7 +20,11 @@ export async function loadPositions(): Promise<LabelPositions> {
 }
 
 export async function savePositions(positions: LabelPositions): Promise<void> {
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
+	await fetch(`${API_BASE}/api/positions`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ positions }),
+	});
 }
 
 export function getLabelText(labelId: LabelId): string {
@@ -39,5 +37,4 @@ export function getLabelText(labelId: LabelId): string {
 			return "Label 3";
 	}
 }
-
 
